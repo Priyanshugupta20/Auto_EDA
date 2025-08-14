@@ -5,39 +5,36 @@ An all-in-one data preprocessing & exploratory data analysis tool — Upload you
 ```
 data-cleaning-pipeline/
 │
-├── data/                         # Input data files (CSV, Excel, etc.)
-│   └── sample.csv
-│
-├── outputs/                      # Final cleaned data, reports, and logs
-│   ├── cleaned_data.csv
-│   ├── eda_report.html
-│   └── cleaning_log.json
-│
-├── frontend/                     # Optional frontend UI (if using)
+├── frontend/                     # Web interface (HTML, CSS, JS)
 │   ├── index.html
 │   ├── style.css
 │   └── script.js
 │
-├── src/                          # Core backend logic (your main focus)
-│   ├── __init__.py
-│   ├── main.py                   # Main entry point for the pipeline
-│   ├── data_loader.py            # load_data
-│   ├── data_types.py             # fix_data_types, identify_columns
-│   ├── data_cleaning.py          # handle_missing_values, remove_duplicates, 
-│   │                             # handle_outliers, normalize_text_columns
-│   ├── feature_scaling.py        # scale_numerical_columns
-│   ├── eda.py                    # summary stats, missing data plot, distributions
-│   ├── reporting.py              # log_cleaning_report, save_cleaned_data
+├── backend/                      # All backend logic and Python code
+│   ├── data/                     # Input data files
+│   │   └── sample.csv
 │
-│   └── utils/                    # Helper functions and shared utilities
-│       ├── __init__.py
-│       ├── file_utils.py         # file extension, file reading, API fetch
-│       ├── type_utils.py         # reusable data type checks
-│       └── config.py             # constants and thresholds
+│   ├── outputs/                  # Cleaned data, reports, and logs
+│   │   ├── cleaned_data.csv
+│   │   ├── eda_report.html
+│   │   └── cleaning_log.json
 │
-├── README.md                     # Project overview, setup, usage
-├── requirements.txt              # Python packages required
-└── run.py                        # (Optional) wrapper to execute pipeline easily
+│   ├── src/                      # Core backend logic
+│   │   ├── __init__.py
+│   │   ├── main.py                   # Runs the full pipeline
+│   │   ├── data_loader.py            # load_data
+│   │   ├── data_types.py             # fix_data_types, identify_columns
+│   │   ├── data_cleaning.py          # handle_missing_values, remove_duplicates, handle_outliers, normalize_text_columns
+│   │   ├── feature_scaling.py        # scale_numerical_columns
+│   │   ├── eda.py                    # summary stats, plots, missing value analysis
+│   │   ├── reporting.py              # log_cleaning_report, save_cleaned_data
+│   │   └── utils/                    # Shared helpers
+│   │       └── config.py             # Constants and thresholds
+│
+│   ├── requirements.txt              # Python dependencies
+│   └── run.py                        # Entry script to execute the pipeline
+│
+├── README.md                         # Project documentation
 ```
 
 ##🧹 Automated Data Cleaning
