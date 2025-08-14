@@ -1,9 +1,11 @@
+// script.js
+
 document.getElementById('uploadBtn').addEventListener('click', async () => {
     const fileInput = document.getElementById('fileInput');
     const loading = document.getElementById('loading');
     const errorDiv = document.getElementById('error');
     const resultsSection = document.getElementById('results');
-    const edaDiv = document.getElementById('eda');
+    const edaLink = document.getElementById('edaLink');
     const downloadLink = document.getElementById('downloadLink');
 
     // Reset state
@@ -20,32 +22,38 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    // Show loading
+    // Show loading indicator
     loading.classList.remove('hidden');
 
     try {
-        // Backend API call
-        const response = await fetch("/api/clean-data", {
+        // Backend API call. The URL is corrected to match app.py's endpoint.
+        const response = await fetch("http://127.0.0.1:5000/upload", {
             method: "POST",
             body: formData
         });
 
-        if (!response.ok) throw new Error("Server error during file processing.");
+        if (!response.ok) {
+            // Get the server error message if available
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Server error during file processing.");
+        }
 
         const result = await response.json();
         loading.classList.add('hidden');
 
-        // Show EDA
-        edaDiv.innerHTML = `
-            <h3>Dataset Summary</h3>
-            <pre>${JSON.stringify(result.eda_summary, null, 2)}</pre>
-        `;
+        // Set the link to view the EDA report
+        edaLink.href = `http://127.0.0.1:5000/eda/${result.eda_report}`;
+        edaLink.classList.remove('hidden');
 
-        // Set download link
-        downloadLink.href = result.cleaned_file_url;
+        // Set the download link for the cleaned file
+        downloadLink.href = `http://127.0.0.1:5000/download/${result.cleaned_file}`;
+        downloadLink.classList.remove('hidden');
 
-        // Show results section
+        // Show the results section
         resultsSection.classList.remove('hidden');
+        
+        // Hide the EDA section text that was there before.
+        document.getElementById('eda').classList.add('hidden');
 
     } catch (err) {
         loading.classList.add('hidden');
