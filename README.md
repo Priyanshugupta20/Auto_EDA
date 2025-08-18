@@ -37,7 +37,7 @@ data-cleaning-pipeline/
 ├── README.md                         # Project documentation
 ```
 
-##🧹 Automated Data Cleaning
+## 🧹 Automated Data Cleaning
 
 - Handle missing values
 - Remove duplicates
@@ -100,4 +100,5 @@ python main.py
 
 ### 4. Open frontend
 Open index.html in your browser
+
 
