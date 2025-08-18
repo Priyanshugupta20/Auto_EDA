@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Automated Data Cleaning Pipeline</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
@@ -28,9 +28,23 @@
 
         <!-- Results Section -->
         <div id="results" class="card hidden">
+
+            <h2>📊 Original Dataset Overview</h2>
+            <div id="overview">
+                <ul id="overviewList"></ul>
+            </div>
+            
+            <h2>🛠️ Steps Taken</h2>
+            <div id="log">
+                <pre id="logContent"><em>Cleaning steps will appear here...</em></pre>
+            </div>
+
+            
             <h2>📊 Data Cleaning Results</h2>
             <div id="eda" class="eda-section">
-                <p><em>Data summary will appear here...</em></p>
+                <iframe id="edaReportFrame" src="" width="100%" height="600px" style="border: none;"></iframe>
+            <br/>
+                <a id="downloadReport" href="#" download class="download-btn">⬇ Download EDA Report</a>
             </div>
             <div class="download-section">
                 <a id="downloadLink" href="#" download class="download-btn">
@@ -44,6 +58,6 @@
         <p>Powered by Automated AI Data Pipeline</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

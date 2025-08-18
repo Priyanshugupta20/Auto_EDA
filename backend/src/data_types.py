@@ -1,4 +1,5 @@
 import pandas as pd
+import logging
 
 def fix_data_types(df):
     """
@@ -29,6 +30,7 @@ def fix_data_types(df):
                     'to': 'numeric',
                     'action': 'converted from string to numeric'
                 })
+                logging.info(f"Column '{col}' converted from {original_dtype} to numeric")
                 continue
             except:
                 pass
@@ -42,6 +44,7 @@ def fix_data_types(df):
                     'to': 'datetime',
                     'action': 'converted from string to datetime'
                 })
+                logging.info(f"Column '{col}' converted from {original_dtype} to datetime")
                 continue
             except:
                 pass
@@ -59,6 +62,7 @@ def fix_data_types(df):
                     'to': 'bool',
                     'action': 'converted to boolean'
                 })
+                logging.info(f"Column '{col}' converted from {original_dtype} to boolean")
                 continue
 
             unique_count = df[col].nunique(dropna=True)
@@ -71,6 +75,7 @@ def fix_data_types(df):
                     'to': 'category',
                     'action': f'converted to category ({unique_count} unique values)'
                 })
+                logging.info(f"Column '{col}' converted from {original_dtype} to category with {unique_count} unique values")
 
     return df, log
 
@@ -105,3 +110,4 @@ def identify_columns(df):
         "boolean": boolean_cols,
         "others": other_cols
     }
+

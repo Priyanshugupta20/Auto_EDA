@@ -1,21 +1,41 @@
 import os
-from flask import Flask, request, jsonify, send_from_directory, render_template
-from werkzeug.utils import secure_filename
-from cleaning_pipeline import clean_data
-from eda_generator import generate_eda_report
-from utils import allowed_file
 import logging
+from flask import Flask, request, jsonify, send_from_directory, render_template, send_file
+from werkzeug.utils import secure_filename
 from flask_cors import CORS
+from pathlib import Path
 
-logging.basicConfig(level=logging.INFO)
+from utils.config import (
+    UPLOAD_FOLDER,
+    OUTPUT_FOLDER,
+    FRONTEND_DIR,
+    MAX_CONTENT_LENGTH
+)
+from utils.helper import setup_logging, allowed_file
+from data_loader import load_data
+from data_types import fix_data_types, identify_columns
+from data_cleaning import normalize_text_columns, remove_duplicates, handle_missing_values, handle_outliers
+from feature_scaling import scale_numerical_columns
+from reporting import save_cleaned_data, log_cleaning_report
+from eda.eda import generate_report, data_overview
 
-app = Flask(__name__)
+# from eda_generator import generate_eda_report
+# from utils import allowed_file
+
+
+setup_logging()
+
+app = Flask(
+    __name__,
+    template_folder=str(FRONTEND_DIR / 'templates'),
+    static_folder=str(FRONTEND_DIR / 'static')
+)
+
 CORS(app)
-UPLOAD_FOLDER = 'uploads'
-OUTPUT_FOLDER = 'outputs'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
+
+app.config['UPLOAD_FOLDER'] = str(UPLOAD_FOLDER)
+app.config['OUTPUT_FOLDER'] = str(OUTPUT_FOLDER)
+app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
@@ -44,16 +64,33 @@ def upload_file():
             
             logging.info(f"File uploaded successfully: {filepath}")
             
-            cleaned_filepath, log_report = clean_data(filepath, app.config['OUTPUT_FOLDER'])
+            log_list = []
+            df_before = load_data(filepath)
+
+            overview = data_overview(df_before)
+            df = df_before.copy()
+            df, log = fix_data_types(df)
+            log_list.append(log)
+            columns_type = identify_columns(df)
+            df = normalize_text_columns(df)
+            df = remove_duplicates(df)
+            df, log = handle_missing_values(df, columns_type['numerical'], columns_type['categorical'])
+            log_list.append(log)
+            df = handle_outliers(df)
+            cleaned_filename = save_cleaned_data(df)
+
             logging.info("Data cleaning pipeline completed.")
             
-            eda_report_path = generate_eda_report(cleaned_filepath, app.config['OUTPUT_FOLDER'])
+            report_filename = generate_report(df)
+            # eda_report_path = generate_eda_report(cleaned_filepath, app.config['OUTPUT_FOLDER'])
             logging.info("EDA report generated.")
             
             return jsonify({
                 'message': 'File processed successfully',
-                'cleaned_file': os.path.basename(cleaned_filepath),
-                'eda_report': os.path.basename(eda_report_path)
+                'overview': overview,
+                'log_report': log_list,
+                'cleaned_file': cleaned_filename,
+                'eda_report': report_filename
             }), 200
         else:
             logging.error(f"File type not allowed: {file.filename}")
@@ -71,13 +108,33 @@ def download_file(filename):
         logging.error(f"File not found for download: {filename}")
         return jsonify({'error': 'File not found'}), 404
 
+# @app.route('/eda/<filename>', methods=['GET'])
+# def serve_eda_report(filename):
+#     try:
+#         return send_from_directory(app.config['OUTPUT_FOLDER'], filename)
+#     except FileNotFoundError:
+#         logging.error(f"EDA report not found: {filename}")
+#         return jsonify({'error': 'Report not found'}), 404
+
+
+
+
 @app.route('/eda/<filename>', methods=['GET'])
 def serve_eda_report(filename):
     try:
-        return send_from_directory(app.config['OUTPUT_FOLDER'], filename)
-    except FileNotFoundError:
-        logging.error(f"EDA report not found: {filename}")
-        return jsonify({'error': 'Report not found'}), 404
+        safe_filename = secure_filename(filename)
+        file_path = Path(app.config['OUTPUT_FOLDER']) / safe_filename
+
+        if not file_path.exists():
+            logging.error(f"EDA report not found: {safe_filename}")
+            return jsonify({'error': 'Report not found'}), 404
+
+        return send_file(file_path, mimetype='text/html')
+
+    except Exception as e:
+        logging.exception(f"Error serving EDA report: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run()
