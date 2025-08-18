@@ -1,4 +1,4 @@
-#🚀 Automated Data Cleaning & EDA Pipeline
+# 🚀 Automated Data Cleaning & EDA Pipeline
 An all-in-one data preprocessing & exploratory data analysis tool — Upload your dataset, let the pipeline handle the cleaning, and get a ready-to-use EDA report in just a few clicks.
 
 ## File Stucture
@@ -6,33 +6,33 @@ An all-in-one data preprocessing & exploratory data analysis tool — Upload you
 data-cleaning-pipeline/
 │
 ├── frontend/                     # Web interface (HTML, CSS, JS)
-│   ├── index.html
-│   ├── style.css
-│   └── script.js
+│   ├── templates/                     # Input data files
+│   │   └── index.html
+│   ├── static/
+│   │   └── style.css
+│   │   └── script.js
 │
 ├── backend/                      # All backend logic and Python code
-│   ├── data/                     # Input data files
-│   │   └── sample.csv
+│   ├── upload/                     # Input data files
+│   │   └── test_dataset.csv
 │
 │   ├── outputs/                  # Cleaned data, reports, and logs
 │   │   ├── cleaned_data.csv
 │   │   ├── eda_report.html
-│   │   └── cleaning_log.json
 │
 │   ├── src/                      # Core backend logic
-│   │   ├── __init__.py
 │   │   ├── main.py                   # Runs the full pipeline
 │   │   ├── data_loader.py            # load_data
 │   │   ├── data_types.py             # fix_data_types, identify_columns
 │   │   ├── data_cleaning.py          # handle_missing_values, remove_duplicates, handle_outliers, normalize_text_columns
 │   │   ├── feature_scaling.py        # scale_numerical_columns
-│   │   ├── eda.py                    # summary stats, plots, missing value analysis
 │   │   ├── reporting.py              # log_cleaning_report, save_cleaned_data
+│   │   ├── eda/                      # Shared helpers
+│   │       └── config.py             # summary stats, plots, missing value analysis
 │   │   └── utils/                    # Shared helpers
 │   │       └── config.py             # Constants and thresholds
 │
 │   ├── requirements.txt              # Python dependencies
-│   └── run.py                        # Entry script to execute the pipeline
 │
 ├── README.md                         # Project documentation
 ```
@@ -59,19 +59,13 @@ Export HTML report to /reports/eda_report.html
 ## 🖥 Backend API (Flask / FastAPI)
 
 /upload → Upload dataset & trigger pipeline
-
 /download → Get cleaned dataset
-
 /eda → View HTML EDA report
-
 Built-in error handling & logging
 
 ## 🎨 Frontend UI
-
 File upload interface
-
 EDA report preview & download link
-
 Responsive design & loading indicators
 
 ## 📂 Tech Stack
@@ -87,15 +81,23 @@ Max file size: 20 MB
 Supported formats: .csv, .xlsx, Dataset API
 
 ## ⚡ Quick Start
-### 1️⃣ Clone repository
+### 1. Clone repository
+```bash
 git clone https://github.com/yourusername/automated-cleaning-eda.git
 cd automated-cleaning-eda
+```
 
-### 2️⃣ Install dependencies
+### 2. Install dependencies
+```bash
 pip install -r requirements.txt
+```
 
-### 3️⃣ Run backend
-python app.py
+### 3. Run backend/src/main.py
+```bash
+cd backend/src
+python main.py
+```
 
-### 4️⃣ Open frontend
+### 4. Open frontend
 Open index.html in your browser
+
