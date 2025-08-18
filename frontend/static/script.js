@@ -7,7 +7,7 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
     const downloadLink = document.getElementById('downloadLink');
     const downloadReport = document.getElementById('downloadReport');
     const overviewList = document.getElementById('overviewList');
-    const logContent = document.getElementById('logContent');
+    // const logContent = document.getElementById('logContent');
 
     // Reset state
     errorDiv.classList.add('hidden');
@@ -110,12 +110,12 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
 
         // =========================
         // ⬇️ Populate Log (if any)
-        // =========================
-        if (result.log_report) {
-            logContent.textContent = JSON.stringify(result.log_report, null, 2);
-        } else {
-            logContent.innerHTML = "<em>No cleaning log provided.</em>";
-        }
+        // // =========================
+        // if (result.log_report) {
+        //     logContent.textContent = JSON.stringify(result.log_report, null, 2);
+        // } else {
+        //     logContent.innerHTML = "<em>No cleaning log provided.</em>";
+        // }
 
         // Show EDA
         edaFrame.src = `/eda/${result.eda_report}`;
@@ -137,3 +137,4 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
         errorDiv.classList.remove('hidden');
     }
 });
+
