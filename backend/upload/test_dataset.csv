@@ -1,0 +1,7 @@
+Name,Age,Income,Gender,Signup Date,Email,holiday
+ Alice ,25,50000.0,Male,2021-01-01,alice@example.com,1
+BOB,30,60000.0,FEMALE,2021-02-01,bob@example.com,1
+Charlie,35,,male,,charlie@example.com,0
+bob,30,60000.0,,2021-02-01,bob@example.com,1
+alice,,50000.0,female,2021-01-01,alice@example.com,0
+,10,1000000.0,Male,not a date,invalid,1

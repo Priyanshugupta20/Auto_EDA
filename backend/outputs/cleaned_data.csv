@@ -1,0 +1,7 @@
+Name,Age,Income,Gender,Signup Date,Email,holiday
+alice,25.0,50000.0,male,2021-01-01 00:00:00,alice@example.com,True
+bob,30.0,60000.0,female,2021-02-01 00:00:00,bob@example.com,True
+charlie,35.0,60000.0,male,2021-01-16 12:00:00,charlie@example.com,False
+bob,30.0,60000.0,empty,2021-02-01 00:00:00,bob@example.com,True
+alice,30.0,50000.0,female,2021-01-01 00:00:00,alice@example.com,False
+empty,20.625,71250.0,male,2021-01-16 12:00:00,invalid,True

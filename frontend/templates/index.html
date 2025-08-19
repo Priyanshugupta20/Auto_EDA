@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Automated Data Cleaning Pipeline</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>🤖 Automated Data Cleaning Pipeline</h1>
+      <p>Upload your dataset — we’ll make it ML-ready automatically.</p>
+    </header>
+
+    <main>
+      <!-- Upload Section -->
+      <div class="card">
+        <h2>📂 Upload Your Dataset</h2>
+        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.json" />
+        <button id="uploadBtn">🚀 Start Cleaning</button>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div id="loading" class="hidden spinner"></div>
+
+      <!-- Error Message -->
+      <div id="error" class="error hidden"></div>
+
+      <!-- Results Section -->
+      <div id="results" class="card hidden">
+        <h2>📊 Original Dataset Overview</h2>
+        <div id="overviewContainer" class="overview-container">
+          <div id="basicStats" class="overview-block"></div>
+          <div id="missingStats" class="overview-block"></div>
+          <div id="dtypeStats" class="overview-block"></div>
+        </div>
+
+        <h2>🛠️ Steps Taken</h2>
+        <div id="log">
+          <div id="logContent"><em>Cleaning steps will appear here...</em></div>
+        </div>
+
+        <h2>📊 Data Cleaning Results</h2>
+        <div id="eda" class="eda-section">
+          <iframe
+            id="edaReportFrame"
+            src=""
+            width="100%"
+            height="600px"
+            style="border: none"
+          ></iframe>
+        </div>
+        <div class="download-section">
+            <a id="downloadReport" href="#" download class="download-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e3e3e3"
+            >
+              <path
+                d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"
+              />
+            </svg>
+            EDA Report</a>
+          <a id="downloadLink" href="#" download class="download-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e3e3e3"
+            >
+              <path
+                d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"
+              />
+            </svg>
+            Cleaned Dataset
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>Powered by Automated AI Data Pipeline</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>
