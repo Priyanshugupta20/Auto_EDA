@@ -83,7 +83,7 @@ data-cleaning-pipeline/
 ### 1. Clone repository
 ```bash
 git clone https://github.com/Priyanshugupta20/Auto_EDA.git
-cd automated-cleaning-eda
+cd Auto_EDA
 ```
 
 ### 2. Install dependencies
@@ -99,3 +99,4 @@ python main.py
 
 ### 4. Open frontend
 Open index.html in your browser
+
