@@ -1,5 +1,5 @@
 from pathlib import Path
-from utils.config import ALLOWED_EXTENSIONS
+from .config import ALLOWED_EXTENSIONS
 import os
 import logging
 
@@ -19,3 +19,4 @@ def setup_logging(log_file_path='backend/outputs/pipeline.log'):
 def allowed_file(filename):
     suffix = Path(filename).suffix.lower()
     return suffix and suffix in ALLOWED_EXTENSIONS
+
