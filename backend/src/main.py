@@ -54,8 +54,10 @@ def upload_file():
             return jsonify({'error': 'No selected file'}), 400
         
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            original_filename = secure_filename(file.filename)
+            file_ext = os.path.splitext(original_filename)[1]
+            custom_name = "raw_dataset" + file_ext
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], custom_name)
             file.save(filepath)
             
             logging.info(f"File uploaded successfully: {filepath}")
