@@ -7,7 +7,7 @@ import uuid
 from ydata_profiling import ProfileReport
 from pathlib import Path
 from datetime import datetime
-from utils.config import OUTPUT_FOLDER
+from ..utils.config import OUTPUT_FOLDER
 
 # =========================================
 #  3. Data Overview
@@ -175,3 +175,4 @@ def generate_report(df):
     profile.to_file(str(report_path))
     logging.info(f"EDA Report generated - {report_filename}")
     return report_filename
+
