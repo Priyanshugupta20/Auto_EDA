@@ -5,19 +5,19 @@ from werkzeug.utils import secure_filename
 from flask_cors import CORS
 from pathlib import Path
 
-from utils.config import (
+from .utils.config import (
     UPLOAD_FOLDER,
     OUTPUT_FOLDER,
     FRONTEND_DIR,
     MAX_CONTENT_LENGTH
 )
-from utils.helper import setup_logging, allowed_file
-from data_loader import load_data
-from data_types import fix_data_types, identify_columns
-from data_cleaning import normalize_text_columns, remove_duplicates, handle_missing_values, handle_outliers
-from feature_scaling import scale_numerical_columns
-from reporting import save_cleaned_data
-from eda.eda import generate_report, data_overview
+from .utils.helper import setup_logging, allowed_file
+from .data_loader import load_data
+from .data_types import fix_data_types, identify_columns
+from .data_cleaning import normalize_text_columns, remove_duplicates, handle_missing_values, handle_outliers
+from .feature_scaling import scale_numerical_columns
+from .reporting import save_cleaned_data
+from .eda.eda import generate_report, data_overview
 
 setup_logging()
 
@@ -124,7 +124,3 @@ def serve_eda_report(filename):
     except Exception as e:
         logging.exception(f"Error serving EDA report: {e}")
         return jsonify({'error': 'Internal server error'}), 500
-
-
-if __name__ == '__main__':
-    app.run()
