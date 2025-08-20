@@ -15,7 +15,8 @@ from backend.src.data_loader import load_data
 from backend.src.data_types import fix_data_types, identify_columns
 from backend.src.data_cleaning import normalize_text_columns, remove_duplicates, handle_missing_values, handle_outliers
 from backend.src.reporting import save_cleaned_data
-from backend.src.eda.eda import generate_report, data_overview
+from backend.src.eda.eda import data_overview
+# from backend.src.eda.eda import generate_report
 
 setup_logging()
 
@@ -88,7 +89,7 @@ def upload_file():
 
             logging.info("Data cleaning pipeline completed.")
             
-            report_filename = generate_report(df)
+            # report_filename = generate_report(df)
 
             logging.info("EDA report generated.")
             
@@ -97,7 +98,7 @@ def upload_file():
                 'overview': overview,
                 'log_report': log_list,
                 'cleaned_file': cleaned_filename,
-                'eda_report': report_filename
+                # 'eda_report': report_filename
             }), 200
         else:
             logging.error(f"File type not allowed: {file.filename}")
@@ -116,18 +117,18 @@ def download_file(filename):
         return jsonify({'error': 'File not found'}), 404
 
 
-@app.route('/eda/<filename>', methods=['GET'])
-def serve_eda_report(filename):
-    try:
-        safe_filename = secure_filename(filename)
-        file_path = Path(app.config['OUTPUT_FOLDER']) / safe_filename
+# @app.route('/eda/<filename>', methods=['GET'])
+# def serve_eda_report(filename):
+#     try:
+#         safe_filename = secure_filename(filename)
+#         file_path = Path(app.config['OUTPUT_FOLDER']) / safe_filename
 
-        if not file_path.exists():
-            logging.error(f"EDA report not found: {safe_filename}")
-            return jsonify({'error': 'Report not found'}), 404
+#         if not file_path.exists():
+#             logging.error(f"EDA report not found: {safe_filename}")
+#             return jsonify({'error': 'Report not found'}), 404
 
-        return send_file(file_path, mimetype='text/html')
+#         return send_file(file_path, mimetype='text/html')
 
-    except Exception as e:
-        logging.exception(f"Error serving EDA report: {e}")
-        return jsonify({'error': 'Internal server error'}), 500
+#     except Exception as e:
+#         logging.exception(f"Error serving EDA report: {e}")
+#         return jsonify({'error': 'Internal server error'}), 500
