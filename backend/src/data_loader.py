@@ -3,21 +3,21 @@ import pandas as pd
 import logging
 
 def load_data(file_path):
-    file_ext = os.path.splitext(file_path)[1].lower()
+    ext = os.path.splitext(file_path)[-1].lower()
 
     try:
-        if file_ext == '.csv':
-            return pd.read_csv(filepath)
-        elif file_ext == '.xls':
-            return pd.read_excel(filepath, engine='xlrd')
-        elif file_ext == '.xlsx':
-            return pd.read_excel(filepath, engine='openpyxl')
+        if ext == '.csv':
+            df = pd.read_csv(file_path)
+            logging.info(f"Loaded CSV file: {file_path} with shape {df.shape}")
+        elif ext in ['.xls', '.xlsx']:
+            df = pd.read_excel(file_path)
+            logging.info(f"Loaded Excel file: {file_path} with shape {df.shape}")
         else:
-            raise ValueError(f"Unsupported file type: {file_ext}")
-        
+            msg = f"Unsupported file extension: {ext}"
+            logging.error(msg)
+            raise ValueError(msg)
     except Exception as e:
         logging.error(f"Error loading file {file_path}: {e}")
         raise ValueError(f"Error loading file: {e}")
-
 
     return df
