@@ -6,12 +6,12 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
     const edaFrame = document.getElementById("edaReportFrame");
     const downloadLink = document.getElementById('downloadLink');
     const downloadReport = document.getElementById('downloadReport');
-    const basicStats = document.getElementById("basicStats").innerHTML = '';
-    const missingStats = document.getElementById("missingStats").innerHTML = '';
-    const dtypeStats = document.getElementById("dtypeStats").innerHTML = '';
+    const basicStats = document.getElementById("basicStats");
+    const missingStats = document.getElementById("missingStats");
+    const dtypeStats = document.getElementById("dtypeStats");
     const logContent = document.getElementById('logContent');
 
-    // Reset state
+    // Reset UI state
     errorDiv.classList.add('hidden');
     resultsSection.classList.add('hidden');
     basicStats.innerHTML = '';
@@ -22,44 +22,24 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
     downloadLink.href = '#';
     downloadReport.href = '#';
 
-    if (!fileInput.files.length) {
+    const file = fileInput.files[0];
+    if (!file) {
         errorDiv.textContent = "⚠ Please select a file before uploading.";
         errorDiv.classList.remove('hidden');
         return;
     }
 
-    const file = fileInput.files[0];
-    const formData = new FormData();
-    formData.append("file", file);
-
-    // Show loading
     loading.classList.remove('hidden');
 
     try {
-        // Backend API call
-        const response = await fetch("/upload", {
-            method: "POST",
-            body: formData
-        });
-
-        if (!response.ok) {
-            // Get the server error message if available
-            const errorData = await response.json();
-            throw new Error(errorData.error || "Server error during file processing.");
-        }
-
-        const result = await response.json();
+        const result = await uploadFileInChunks(file);
         loading.classList.add('hidden');
 
-        // ========================
-        // ⬇️ Populate Overview Info
-        // ========================
         const ov = result.overview;
-
         if (!ov || typeof ov !== 'object') {
             document.getElementById("overviewContainer").innerHTML = "<p><strong>Error:</strong> Overview data is missing.</p>";
         } else {
-            // ➤ Basic Stats Block
+            // Basic Info
             let basicHtml = '<h3>Basic Info</h3><table>';
             if (ov.shape) {
                 basicHtml += `<tr><td>Rows</td><td>${ov.shape.rows}</td></tr>`;
@@ -72,9 +52,9 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
                 basicHtml += `<tr><td>Memory Usage</td><td>${ov.memory_usage.total}</td></tr>`;
             }
             basicHtml += '</table>';
-            document.getElementById("basicStats").innerHTML = basicHtml;
+            basicStats.innerHTML = basicHtml;
 
-            // ➤ Missing Values Block
+            // Missing Values
             let missingHtml = '<h3>Missing Values</h3><table>';
             if (ov.missing_values && Object.keys(ov.missing_values).length > 0) {
                 for (const [col, count] of Object.entries(ov.missing_values)) {
@@ -84,9 +64,9 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
                 missingHtml += `<tr><td colspan="2"><em>No missing values</em></td></tr>`;
             }
             missingHtml += '</table>';
-            document.getElementById("missingStats").innerHTML = missingHtml;
+            missingStats.innerHTML = missingHtml;
 
-            // ➤ Data Types Block
+            // Data Types
             let dtypeHtml = '<h3>Data Types</h3><table>';
             if (ov.dtypes && Object.keys(ov.dtypes).length > 0) {
                 for (const [col, dtype] of Object.entries(ov.dtypes)) {
@@ -96,75 +76,57 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
                 dtypeHtml += `<tr><td colspan="2"><em>No dtype info</em></td></tr>`;
             }
             dtypeHtml += '</table>';
-            document.getElementById("dtypeStats").innerHTML = dtypeHtml;
+            dtypeStats.innerHTML = dtypeHtml;
         }
 
-        // =========================
-        // ⬇️ Populate Log (if any)
-        // =========================
+        // Log Report
         if (result.log_report && result.log_report.length > 0) {
-        logContent.innerHTML = '';  // Clear previous content
-        console.log(result.log_report)
+            logContent.innerHTML = '';
+            result.log_report.forEach(step => {
+                if (step.length !== 0) {
+                    const table = document.createElement('table');
+                    table.classList.add('log-table');
 
-        result.log_report.forEach((step, stepIndex) => {
-
-            if (step.length !== 0) {
-
-                const table = document.createElement('table');
-                table.classList.add('log-table');
-
-                // Table headers (based on keys of first entry)
-                const headers = Object.keys(step[0]);
-                const thead = document.createElement('thead');
-                const headerRow = document.createElement('tr');
-                headers.forEach(key => {
-                    const th = document.createElement('th');
-                    th.textContent = key;
-                    headerRow.appendChild(th);
-                });
-                thead.appendChild(headerRow);
-                table.appendChild(thead);
-
-                // Table rows
-                const tbody = document.createElement('tbody');
-                step.forEach(entry => {
-                    const row = document.createElement('tr');
+                    const headers = Object.keys(step[0]);
+                    const thead = document.createElement('thead');
+                    const headerRow = document.createElement('tr');
                     headers.forEach(key => {
-                        const td = document.createElement('td');
-                        const value = entry[key];
-
-                        if (typeof value === 'object' && value !== null) {
-                            td.textContent = JSON.stringify(value);
-                        } else {
-                            td.textContent = value;
-                        }
-
-                        row.appendChild(td);
+                        const th = document.createElement('th');
+                        th.textContent = key;
+                        headerRow.appendChild(th);
                     });
-                    tbody.appendChild(row);
-                });
+                    thead.appendChild(headerRow);
+                    table.appendChild(thead);
 
-                table.appendChild(tbody);
-                logContent.appendChild(table);
-            }
-        });
-    } else {
-        logContent.innerHTML = "<em>No cleaning log provided.</em>";
-    }
+                    const tbody = document.createElement('tbody');
+                    step.forEach(entry => {
+                        const row = document.createElement('tr');
+                        headers.forEach(key => {
+                            const td = document.createElement('td');
+                            const value = entry[key];
+                            td.textContent = typeof value === 'object' && value !== null ? JSON.stringify(value) : value;
+                            row.appendChild(td);
+                        });
+                        tbody.appendChild(row);
+                    });
 
+                    table.appendChild(tbody);
+                    logContent.appendChild(table);
+                }
+            });
+        } else {
+            logContent.innerHTML = "<em>No cleaning log provided.</em>";
+        }
 
-        // Show EDA
+        // Show reports
         edaFrame.src = `/eda/${result.eda_report}`;
-
         downloadReport.href = `/eda/${result.eda_report}`;
         downloadReport.download = result.eda_report;
 
-        // Set download link
         downloadLink.href = `/download/${result.cleaned_file}`;
         downloadLink.download = result.cleaned_file;
         downloadLink.classList.remove("hidden");
 
-        // Show results section
         resultsSection.classList.remove('hidden');
 
     } catch (err) {
@@ -173,3 +135,49 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
         errorDiv.classList.remove('hidden');
     }
 });
+
+// ========== ⬇️ Chunked Upload Logic ==========
+
+async function uploadFileInChunks(file) {
+    const chunkSize = 2 * 1024 * 1024; // 2MB
+    const totalChunks = Math.ceil(file.size / chunkSize);
+    const fileId = Date.now().toString();
+
+    for (let i = 0; i < totalChunks; i++) {
+        const start = i * chunkSize;
+        const end = Math.min(start + chunkSize, file.size);
+        const chunk = file.slice(start, end);
+
+        const formData = new FormData();
+        formData.append('file_id', fileId);
+        formData.append('chunk_index', i);
+        formData.append('total_chunks', totalChunks);
+        formData.append('file', chunk);
+
+        const response = await fetch('/upload_chunk', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`Upload failed at chunk ${i}`);
+        }
+    }
+
+    // Merge and process file
+    const mergeResponse = await fetch('/merge_chunks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            file_id: fileId,
+            filename: file.name
+        })
+    });
+
+    if (!mergeResponse.ok) {
+        const errorData = await mergeResponse.json();
+        throw new Error(errorData.error || "Merge or processing failed.");
+    }
+
+    return await mergeResponse.json();
+}
