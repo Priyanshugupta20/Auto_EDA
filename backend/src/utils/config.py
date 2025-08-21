@@ -18,11 +18,12 @@ ALLOWED_EXTENSIONS = {".csv", ".xlsx", ".xls"}
 APP_TITLE = "Automated Data Cleaning API"
 APP_DESCRIPTION = "Backend service for uploading, cleaning, and analyzing datasets."
 APP_VERSION = "1.0.0"
-MAX_CONTENT_LENGTH = 20 * 1024 * 1024  # 20 MB
+MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50 MB
 
 # CORS settings (for frontend integration)
 ALLOWED_ORIGINS = ["*"]  # Change to ["http://localhost:3000"] or your domain in production
 
 # Ensure folders exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
