@@ -2,6 +2,7 @@ import os
 import logging
 from flask import Flask, request, jsonify, send_from_directory, render_template, send_file
 from werkzeug.utils import secure_filename
+from werkzeug.exceptions import RequestEntityTooLarge
 from flask_cors import CORS
 from pathlib import Path
 
@@ -31,7 +32,7 @@ CORS(app)
 
 app.config['UPLOAD_FOLDER'] = str(UPLOAD_FOLDER)
 app.config['OUTPUT_FOLDER'] = str(OUTPUT_FOLDER)
-app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 *1024
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
@@ -39,6 +40,10 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.errorhandler(RequestEntityTooLarge)
+def handle_large_file(error):
+    return jsonify({'error': 'File too large. Max limit is 50MB.'}), 413
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -124,3 +129,4 @@ def serve_eda_report(filename):
     except Exception as e:
         logging.exception(f"Error serving EDA report: {e}")
         return jsonify({'error': 'Internal server error'}), 500
+
