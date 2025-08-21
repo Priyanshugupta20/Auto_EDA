@@ -42,33 +42,14 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
             body: formData
         });
 
-        // if (!response.ok) {
-        //     // Get the server error message if available
-        //     const errorData = await response.json();
-        //     throw new Error(errorData.error || "Server error during file processing.");
-        // }
-
-        // const result = await response.json();
-        // loading.classList.add('hidden');
-
-        
         if (!response.ok) {
-          // response is not OK (status code not 200–299)
-          const text = await response.text(); // try reading as text (could be HTML)
-          console.error('Upload failed:', response.status, text);
-          throw new Error('Upload failed: ' + response.status);
-        }
-        
-        // Optionally check if content-type is JSON
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
-          console.log("Upload success:", data);
-        } else {
-          const text = await response.text();
-          console.warn("Expected JSON but got:", text);
+            // Get the server error message if available
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Server error during file processing.");
         }
 
+        const result = await response.json();
+        loading.classList.add('hidden');
 
         // ========================
         // ⬇️ Populate Overview Info
@@ -191,5 +172,4 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
         errorDiv.textContent = `❌ ${err.message}`;
         errorDiv.classList.remove('hidden');
     }
-
 });
